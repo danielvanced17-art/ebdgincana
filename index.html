@@ -326,62 +326,524 @@ var POLL_PLAYER = 8000;
 var POLL_PAINEL = 4000;
 var IS_PAINEL = new URLSearchParams(location.search).get("painel") === "1";
 
-var QUESTIONS = [
-  { q: "Qual versículo serve de texto principal para a lição?",
-    options: ["Filipenses 4.4: \"Regozijai-vos, sempre, no Senhor\"",
-              "Salmo 133.1: \"Como é bom e suave habitarem os irmãos em união\"",
-              "Mateus 18.19: \"Se dois de vós concordarem na terra\"",
-              "João 17.23: \"Eu neles, e tu em mim\""],
-    answer: 0,
-    explain: "O texto principal é Filipenses 4.4, com o chamado a regozijar-se sempre no Senhor." },
-  { q: "Qual destas expressões NÃO é um dos vocativos usados por Paulo para os filipenses?",
-    options: ["Amados", "Queridos irmãos", "Fiéis servos de Roma", "Minha alegria e coroa"],
-    answer: 2,
-    explain: "Os vocativos são amados, queridos irmãos, minha alegria e coroa. \"Fiéis servos de Roma\" não aparece." },
-  { q: "Quais mulheres tiveram uma divergência na igreja de Filipos e foram mencionadas por Paulo?",
-    options: ["Lídia e Priscila", "Evódia e Síntique", "Marta e Maria", "Ana e Rute"],
-    answer: 1,
-    explain: "Paulo cita Evódia e Síntique em Filipenses 4.2-3 e pede que se reconciliem no Senhor." },
-  { q: "Segundo a lição, qual é o significado de \"epieikes\", traduzida por equidade?",
-    options: ["Riqueza e prosperidade", "Moderação, afabilidade, gentileza e suavidade",
-              "Força e coragem militar", "Sabedoria e conhecimento"],
-    answer: 1,
-    explain: "A palavra grega também pode significar moderação, afabilidade, gentileza e suavidade." },
-  { q: "Qual é o tema da leitura de segunda-feira (Salmo 133.1)?",
-    options: ["A força de estar juntos", "A bênção de estar juntos",
-              "A autoridade que a unidade gera", "O alinhamento dos entendimentos"],
-    answer: 1,
-    explain: "Segunda-feira: Salmo 133.1, a bênção de estar juntos. A força de estar juntos é terça-feira." },
-  { q: "De acordo com a lição, os conflitos são sinal de fracasso espiritual?",
-    options: ["Sim, sempre indicam falta de fé",
-              "Não, são oportunidade de crescimento, desde que sejam bem tratados",
-              "Sim, mas somente entre líderes",
-              "Não, porque cristãos maduros nunca discordam"],
-    answer: 1,
-    explain: "A lição ensina que o problema não é o conflito em si, mas a forma como ele é tratado." },
-  { q: "Qual é a principal recomendação de Paulo às duas líderes em conflito?",
-    options: ["Que se afastassem uma da outra", "Que sentissem o mesmo no Senhor",
-              "Que deixassem a igreja de Filipos", "Que escolhessem um lado na disputa"],
-    answer: 1,
-    explain: "Paulo pediu que sentissem o mesmo no Senhor (v. 2) e solicitou ajuda de outros cristãos para a reconciliação (v. 3)." },
-  { q: "Na expressão \"perto está o Senhor\", a lição aponta dois sentidos. Quais são eles?",
-    options: ["Riqueza e saúde", "Presença de Deus no cotidiano e a volta de Cristo",
-              "Perseguição e martírio", "Ensino da Lei e dos profetas"],
-    answer: 1,
-    explain: "Há o sentido da proximidade de Deus diante das lutas e o sentido escatológico, da proximidade do Dia do Senhor." },
-  { q: "Segundo a lição, a alegria cristã depende das circunstâncias da vida?",
-    options: ["Sim, ela cresce quando os desejos se realizam",
-              "Não, ela é um fruto do Espírito, ligado ao relacionamento com Cristo",
-              "Sim, ela depende da prosperidade financeira",
-              "Não, ela é apenas um sentimento passageiro"],
-    answer: 1,
-    explain: "A alegria que Paulo descreve não é temporal nem circunstancial, mas nasce do relacionamento com o Senhor." },
-  { q: "A pergunta \"Sou eu, por acaso, guardador do meu irmão?\" aparece em qual contexto bíblico?",
-    options: ["A conversa entre Caim e Deus, após a morte de Abel", "A parábola do bom samaritano",
-              "A chamada dos doze discípulos", "O sermão do monte"],
-    answer: 0,
-    explain: "A pergunta é de Caim, em Gênesis 4.9, quando Deus lhe pergunta sobre Abel." }
+var BANCO = [
+  {
+   "q": "Qual versículo serve de texto principal para a lição?",
+   "options": [
+    "Filipenses 4.4: \"Regozijai-vos, sempre, no Senhor\"",
+    "Salmo 133.1: \"Como é bom e suave habitarem os irmãos em união\"",
+    "Mateus 18.19: \"Se dois de vós concordarem na terra\"",
+    "João 17.23: \"Eu neles, e tu em mim\""
+   ],
+   "answer": 0,
+   "explain": "O texto principal é Filipenses 4.4, com o chamado a regozijar-se sempre no Senhor.",
+   "id": 1
+  },
+  {
+   "q": "Qual destas expressões NÃO é um dos vocativos usados por Paulo para os filipenses?",
+   "options": [
+    "Amados",
+    "Queridos irmãos",
+    "Fiéis servos de Roma",
+    "Minha alegria e coroa"
+   ],
+   "answer": 2,
+   "explain": "Os vocativos são amados, queridos irmãos, minha alegria e coroa. \"Fiéis servos de Roma\" não aparece.",
+   "id": 2
+  },
+  {
+   "q": "Quais mulheres tiveram uma divergência na igreja de Filipos e foram mencionadas por Paulo?",
+   "options": [
+    "Lídia e Priscila",
+    "Evódia e Síntique",
+    "Marta e Maria",
+    "Ana e Rute"
+   ],
+   "answer": 1,
+   "explain": "Paulo cita Evódia e Síntique em Filipenses 4.2-3 e pede que se reconciliem no Senhor.",
+   "id": 3
+  },
+  {
+   "q": "Segundo a lição, qual é o significado de \"epieikes\", traduzida por equidade?",
+   "options": [
+    "Riqueza e prosperidade",
+    "Moderação, afabilidade, gentileza e suavidade",
+    "Força e coragem militar",
+    "Sabedoria e conhecimento"
+   ],
+   "answer": 1,
+   "explain": "A palavra grega também pode significar moderação, afabilidade, gentileza e suavidade.",
+   "id": 4
+  },
+  {
+   "q": "Qual é o tema da leitura de segunda-feira (Salmo 133.1)?",
+   "options": [
+    "A força de estar juntos",
+    "A bênção de estar juntos",
+    "A autoridade que a unidade gera",
+    "O alinhamento dos entendimentos"
+   ],
+   "answer": 1,
+   "explain": "Segunda-feira: Salmo 133.1, a bênção de estar juntos. A força de estar juntos é terça-feira.",
+   "id": 5
+  },
+  {
+   "q": "De acordo com a lição, os conflitos são sinal de fracasso espiritual?",
+   "options": [
+    "Sim, sempre indicam falta de fé",
+    "Não, são oportunidade de crescimento, desde que sejam bem tratados",
+    "Sim, mas somente entre líderes",
+    "Não, porque cristãos maduros nunca discordam"
+   ],
+   "answer": 1,
+   "explain": "A lição ensina que o problema não é o conflito em si, mas a forma como ele é tratado.",
+   "id": 6
+  },
+  {
+   "q": "Qual é a principal recomendação de Paulo às duas líderes em conflito?",
+   "options": [
+    "Que se afastassem uma da outra",
+    "Que sentissem o mesmo no Senhor",
+    "Que deixassem a igreja de Filipos",
+    "Que escolhessem um lado na disputa"
+   ],
+   "answer": 1,
+   "explain": "Paulo pediu que sentissem o mesmo no Senhor (v. 2) e solicitou ajuda de outros cristãos para a reconciliação (v. 3).",
+   "id": 7
+  },
+  {
+   "q": "Na expressão \"perto está o Senhor\", a lição aponta dois sentidos. Quais são eles?",
+   "options": [
+    "Riqueza e saúde",
+    "Presença de Deus no cotidiano e a volta de Cristo",
+    "Perseguição e martírio",
+    "Ensino da Lei e dos profetas"
+   ],
+   "answer": 1,
+   "explain": "Há o sentido da proximidade de Deus diante das lutas e o sentido escatológico, da proximidade do Dia do Senhor.",
+   "id": 8
+  },
+  {
+   "q": "Segundo a lição, a alegria cristã depende das circunstâncias da vida?",
+   "options": [
+    "Sim, ela cresce quando os desejos se realizam",
+    "Não, ela é um fruto do Espírito, ligado ao relacionamento com Cristo",
+    "Sim, ela depende da prosperidade financeira",
+    "Não, ela é apenas um sentimento passageiro"
+   ],
+   "answer": 1,
+   "explain": "A alegria que Paulo descreve não é temporal nem circunstancial, mas nasce do relacionamento com o Senhor.",
+   "id": 9
+  },
+  {
+   "q": "A pergunta \"Sou eu, por acaso, guardador do meu irmão?\" aparece em qual contexto bíblico?",
+   "options": [
+    "A conversa entre Caim e Deus, após a morte de Abel",
+    "A parábola do bom samaritano",
+    "A chamada dos doze discípulos",
+    "O sermão do monte"
+   ],
+   "answer": 0,
+   "explain": "A pergunta é de Caim, em Gênesis 4.9, quando Deus lhe pergunta sobre Abel.",
+   "id": 10
+  },
+  {
+   "id": 11,
+   "q": "De que forma a lição descreve a amizade entre Paulo e os filipenses?",
+   "options": [
+    "Nascida sob o manto do Calvário e inaugurada com o Evangelho",
+    "Igual à amizade difundida nos círculos filosóficos gregos",
+    "Uma relação puramente profissional entre apóstolo e discípulos",
+    "Baseada na cidadania romana que tinham em comum"
+   ],
+   "answer": 0,
+   "explain": "A lição afirma que não é a amizade dos círculos filosóficos gregos, mas a que nasceu do Calvário e do Evangelho de Jesus."
+  },
+  {
+   "id": 12,
+   "q": "Em \"minha alegria e coroa\", a palavra grega stephanos significa, aqui, o quê?",
+   "options": [
+    "Aquilo que é enfeite e honra para alguém",
+    "Um castigo aplicado pelas autoridades romanas",
+    "Um imposto cobrado em Filipos",
+    "Um instrumento de trabalho do apóstolo"
+   ],
+   "answer": 0,
+   "explain": "Segundo a lição, stephanos indica aquilo que serve de enfeite e honra para alguém."
+  },
+  {
+   "id": 13,
+   "q": "Qual palavra grega foi traduzida por \"amados\" em Filipenses 4.1?",
+   "options": [
+    "Agapetos",
+    "Epieikes",
+    "Hoste",
+    "Synathlesan"
+   ],
+   "answer": 0,
+   "explain": "Agapetos é traduzida por amados. Epieikes é equidade, hoste é portanto e synathlesan é lutar ao lado de."
+  },
+  {
+   "id": 14,
+   "q": "Qual a função da conjunção grega \"hoste\" (portanto) no início do capítulo 4?",
+   "options": [
+    "Aplicar o argumento anterior à ideia que vem em seguida",
+    "Introduzir uma crítica aos filipenses",
+    "Encerrar a carta",
+    "Citar um texto do Antigo Testamento"
+   ],
+   "answer": 0,
+   "explain": "Paulo usa hoste para aplicar o que acabou de dizer à exortação seguinte, como ocorre aqui."
+  },
+  {
+   "id": 15,
+   "q": "No último versículo do capítulo 3, de que Paulo estava falando?",
+   "options": [
+    "Da glorificação do corpo",
+    "Da conversão dos gentios",
+    "Da perseguição em Filipos",
+    "Da coleta para os santos"
+   ],
+   "answer": 0,
+   "explain": "Ele falava da glorificação do corpo e, por isso, exorta o Corpo de Cristo a estar firme em unidade."
+  },
+  {
+   "id": 16,
+   "q": "Segundo a lição, por que Paulo cita Evódia e Síntique pelo nome?",
+   "options": [
+    "Pela verdadeira amizade que tinha por elas, sem críticas veladas",
+    "Para expô-las e humilhá-las diante da igreja",
+    "Porque eram as únicas mulheres da igreja",
+    "Porque a lei romana exigia citar nomes"
+   ],
+   "answer": 0,
+   "explain": "A lição lembra que a marca da inimizade é a crítica anônima e velada. Paulo faz o contrário, por amizade."
+  },
+  {
+   "id": 17,
+   "q": "No conflito entre as duas líderes, qual foi a postura de Paulo?",
+   "options": [
+    "Não tomou partido e permaneceu pronto para ajudar a resolver",
+    "Apoiou Evódia contra Síntique",
+    "Apoiou Síntique contra Evódia",
+    "Ignorou o conflito por completo"
+   ],
+   "answer": 0,
+   "explain": "Paulo não ignorou o conflito nem tomou partido, embora tivesse uma opinião."
+  },
+  {
+   "id": 18,
+   "q": "Segundo a lição, como acontece o alinhamento dos entendimentos?",
+   "options": [
+    "Por ação direta e sobrenatural do Espírito Santo na mente, quando Ele tem lugar para operar",
+    "Pela decisão de um tribunal da igreja",
+    "Pelo passar do tempo, sem esforço",
+    "Pelo voto da maioria"
+   ],
+   "answer": 0,
+   "explain": "A lição diz que o alinhamento dos entendimentos vem do Espírito Santo, quando lhe é dado lugar."
+  },
+  {
+   "id": 19,
+   "q": "A quem Paulo pede que ajude as duas mulheres (v. 3)?",
+   "options": [
+    "A um companheiro de ministério que estava em Filipos",
+    "A uma comissão enviada de Jerusalém",
+    "Aos magistrados da cidade",
+    "Aos líderes da igreja de Roma"
+   ],
+   "answer": 0,
+   "explain": "Paulo pede a um companheiro de ministério, que alguns acreditam ser Lucas, Silas ou Timóteo."
+  },
+  {
+   "id": 20,
+   "q": "Por que Paulo pediu a intervenção direta de um companheiro?",
+   "options": [
+    "Porque há situações em que conselhos à distância não resolvem e é preciso a atuação direta de um líder",
+    "Porque ele estava impedido de escrever mais cartas",
+    "Porque não havia mais ninguém na igreja de Filipos",
+    "Porque o conflito era sobre dinheiro"
+   ],
+   "answer": 0,
+   "explain": "A lição explica que certas situações pedem a presença direta de um líder, como a de Evódia e Síntique."
+  },
+  {
+   "id": 21,
+   "q": "A lição ensina que o conflito entre as duas líderes devia ser visto também como...",
+   "options": [
+    "Um ardil do mal, que não deve ser ignorado (2 Co 2.10,11)",
+    "Uma prova de que a igreja de Filipos era fraca",
+    "Um castigo de Deus sobre as duas",
+    "Algo sem importância para a igreja"
+   ],
+   "answer": 0,
+   "explain": "A divisão pode ser obra do mal, que não deve ser ignorada (2 Co 2.10,11)."
+  },
+  {
+   "id": 22,
+   "q": "O que a lição quer dizer com \"estantes com troféus espirituais\"?",
+   "options": [
+    "Pessoas que usam feitos do passado para justificar erros do presente",
+    "Os prêmios que a igreja entrega aos jovens",
+    "As lembranças que o apóstolo guardava de suas viagens",
+    "Os livros que Paulo escreveu na prisão"
+   ],
+   "answer": 0,
+   "explain": "Troféus do passado não justificam erros do presente, pois a caminhada cristã é diária."
+  },
+  {
+   "id": 23,
+   "q": "Segundo Mateus 24.13, citado na lição, quem será salvo?",
+   "options": [
+    "Aquele que perseverar até o fim",
+    "Aquele que tiver mais troféus espirituais",
+    "Aquele que nunca discordar de ninguém",
+    "Aquele que exercer liderança"
+   ],
+   "answer": 0,
+   "explain": "A caminhada cristã é feita no dia a dia, e só quem persevera até o fim será salvo."
+  },
+  {
+   "id": 24,
+   "q": "Qual o significado do nome \"Evódia\", segundo o subsídio da lição?",
+   "options": [
+    "Agradável, de bom aroma",
+    "Sorte, afortunada",
+    "Vitoriosa",
+    "Fiel"
+   ],
+   "answer": 0,
+   "explain": "Evódia significa agradável (de bom aroma). Síntique significa sorte, afortunada."
+  },
+  {
+   "id": 25,
+   "q": "O verbo grego \"synathlesan\" (Fp 4.3) é um termo militar. O que ele significa?",
+   "options": [
+    "Lutar ao lado de",
+    "Fugir da batalha",
+    "Render-se ao inimigo",
+    "Comandar um exército"
+   ],
+   "answer": 0,
+   "explain": "Indica que as duas lutaram ao lado de Paulo pelo evangelho, firmes mesmo na oposição."
+  },
+  {
+   "id": 26,
+   "q": "Desde quando as mulheres de Filipos estavam envolvidas na igreja?",
+   "options": [
+    "Desde a fundação da igreja (At 16)",
+    "Somente depois da primeira prisão de Paulo",
+    "Só a partir do capítulo 4 de Filipenses",
+    "Nunca participaram do ministério"
+   ],
+   "answer": 0,
+   "explain": "O subsídio lembra o envolvimento das mulheres de Filipos desde a fundação da igreja (At 16)."
+  },
+  {
+   "id": 27,
+   "q": "Por que a desavença das duas ameaçava a unidade da igreja?",
+   "options": [
+    "Porque elas tinham posições de influência",
+    "Porque eram as mais jovens da igreja",
+    "Porque haviam abandonado a fé",
+    "Porque moravam longe de Filipos"
+   ],
+   "answer": 0,
+   "explain": "Segundo o subsídio, o problema atingia a igreja porque as duas tinham posições de influência."
+  },
+  {
+   "id": 28,
+   "q": "Segundo Lucas 10.20, citado na lição, por que devemos nos alegrar?",
+   "options": [
+    "Por ter o nosso nome escrito nos céus",
+    "Por conseguirmos tudo o que desejamos",
+    "Por termos uma vida sem problemas",
+    "Por sermos reconhecidos pelas pessoas"
+   ],
+   "answer": 0,
+   "explain": "A alegria cristã é duradoura e nasce do relacionamento com Jesus, e não do que se consegue."
+  },
+  {
+   "id": 29,
+   "q": "A lição diz que o tema da alegria começou em Filipenses 1.4. Onde ele virou um imperativo?",
+   "options": [
+    "Em Filipenses 3.1",
+    "Em Filipenses 2.22",
+    "Em Filipenses 4.1",
+    "Em Filipenses 1.27"
+   ],
+   "answer": 0,
+   "explain": "O tema começa em 1.4, vira imperativo em 3.1 e é retomado em 4.4."
+  },
+  {
+   "id": 30,
+   "q": "Além de teólogo da graça, como a lição chama Paulo?",
+   "options": [
+    "Teólogo da alegria",
+    "Teólogo da lei",
+    "Teólogo da prosperidade",
+    "Teólogo do silêncio"
+   ],
+   "answer": 0,
+   "explain": "Paulo é chamado de teólogo da graça e também da alegria, uma alegria duradoura e espiritual."
+  },
+  {
+   "id": 31,
+   "q": "Por que a lição lembra que muitos moradores de Filipos eram arrogantes?",
+   "options": [
+    "Por causa da cidadania romana, e por isso precisavam de mansidão e humildade",
+    "Por causa da riqueza em ouro",
+    "Por serem os maiores comerciantes da Macedônia",
+    "Por terem vencido uma guerra"
+   ],
+   "answer": 0,
+   "explain": "Orgulhosos da cidadania romana, deviam seguir o conselho de Jesus de revestir-se de mansidão e humildade (Mt 11.29)."
+  },
+  {
+   "id": 32,
+   "q": "Quem parecia estar muito presente em Filipos, perseguindo o Evangelho, segundo a lição?",
+   "options": [
+    "César, o senhor dos romanos",
+    "Herodes",
+    "Pilatos",
+    "Alexandre, o Grande"
+   ],
+   "answer": 0,
+   "explain": "Enquanto César parecia presente, Paulo lembra aos cristãos que perto está o Senhor."
+  },
+  {
+   "id": 33,
+   "q": "Segundo o Salmo 145.18, citado na lição, a quem o socorro de Deus está perto?",
+   "options": [
+    "Dos que clamam por Ele",
+    "Somente dos sacerdotes",
+    "Dos que já alcançaram prosperidade",
+    "Dos que nunca erraram"
+   ],
+   "answer": 0,
+   "explain": "Diante das lutas, podemos descansar, porque o socorro de Deus está perto dos que clamam por Ele."
+  },
+  {
+   "id": 34,
+   "q": "Como a lição descreve o \"Dia do Senhor\"?",
+   "options": [
+    "O dia em que todas as coisas virão à luz e os santos serão glorificados",
+    "Um feriado religioso de Filipos",
+    "O dia em que a igreja de Filipos foi fundada",
+    "O dia do julgamento apenas dos romanos"
+   ],
+   "answer": 0,
+   "explain": "É o dia em que tudo vem à luz, o dia da vingança do nosso Deus e da glorificação de todos os santos."
+  },
+  {
+   "id": 35,
+   "q": "O que, segundo o \"Ponto Importante\", ajuda o jovem a não perder o foco nas pressões do dia a dia?",
+   "options": [
+    "Viver consciente da presença de Deus e da volta de Cristo",
+    "Passar mais tempo nas redes sociais",
+    "Evitar qualquer convivência com outros jovens",
+    "Ter sempre razão nas discussões"
+   ],
+   "answer": 0,
+   "explain": "Viver consciente da presença de Deus e da volta de Cristo ajuda o jovem a manter o foco."
+  },
+  {
+   "id": 36,
+   "q": "Segundo a introdução para o professor, o que tem ocupado mais o tempo dos jovens?",
+   "options": [
+    "As redes sociais, mais do que os relacionamentos presenciais",
+    "O trabalho voluntário na igreja",
+    "O estudo diário da Bíblia",
+    "As viagens missionárias"
+   ],
+   "answer": 0,
+   "explain": "Por isso eles precisam ser orientados a viver a fé em comunidade e não de forma individualista."
+  },
+  {
+   "id": 37,
+   "q": "De que forma a lição diz que a vida cristã deve ser vivida?",
+   "options": [
+    "Em comunidade, como no início da igreja primitiva (At 2.42-47)",
+    "De forma individualista",
+    "Somente no ambiente familiar",
+    "Apenas pelas redes sociais"
+   ],
+   "answer": 0,
+   "explain": "A vida cristã não é individualista, e precisa ser desenvolvida em comunidade."
+  },
+  {
+   "id": 38,
+   "q": "O que a lição recomenda quando for necessário para preservar a unidade da igreja?",
+   "options": [
+    "Usar todos os recursos disponíveis, como a mediação",
+    "Ignorar o problema até passar",
+    "Expulsar os envolvidos",
+    "Esperar que o tempo resolva sozinho"
+   ],
+   "answer": 0,
+   "explain": "Quando necessário, todos os recursos, como a mediação, devem ser usados para assegurar a unidade."
+  },
+  {
+   "id": 39,
+   "q": "Segundo o subsídio, como podemos permanecer firmes no Senhor?",
+   "options": [
+    "Conservando o pensamento em Cristo, lembrando que este mundo não é o nosso lar e que Cristo tem tudo sob seu controle",
+    "Evitando qualquer contato com quem pensa diferente",
+    "Contando apenas com as próprias forças",
+    "Esperando que os problemas desapareçam"
+   ],
+   "answer": 0,
+   "explain": "A firmeza vem de manter o pensamento em Cristo e confiar que Ele está no controle (Fp 3.20,21)."
+  },
+  {
+   "id": 40,
+   "q": "Qual leitura semanal trata de \"A força de estar juntos\"?",
+   "options": [
+    "Eclesiastes 4.12",
+    "Salmo 133.1",
+    "Mateus 18.19",
+    "João 17.23"
+   ],
+   "answer": 0,
+   "explain": "Terça-feira: Eclesiastes 4.12, a força de estar juntos."
+  }
 ];
+
+var PERGUNTAS_POR_RODADA = 10;
+var QUESTIONS = [];                 // as 10 perguntas da rodada em andamento (sorteadas a partir do BANCO)
+var rodada = null;                  // número da rodada vigente, informado pelo script da planilha
+var sessionRodada = null, sessionDoServidor = false, qids = [];
+
+function mulberry32(a) {
+  return function () {
+    a |= 0; a = a + 0x6D2B79F5 | 0;
+    var t = Math.imul(a ^ a >>> 15, 1 | a);
+    t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+    return ((t ^ t >>> 14) >>> 0) / 4294967296;
+  };
+}
+function embaralharComSemente(arr, seed) {
+  var a = arr.slice(), r = mulberry32(seed), i, j, t;
+  for (i = a.length - 1; i > 0; i--) { j = Math.floor(r() * (i + 1)); t = a[i]; a[i] = a[j]; a[j] = t; }
+  return a;
+}
+// Todos os jogadores da mesma rodada recebem as mesmas 10 perguntas. Cada rodada nova usa 10 que
+// ainda não saíram; com 40 perguntas são 4 rodadas sem repetir, e então o ciclo recomeça embaralhado.
+function selecionarIds(r) {
+  var por = Math.floor(BANCO.length / PERGUNTAS_POR_RODADA);
+  var ciclo = Math.floor(r / por), pos = r % por;
+  var perm = embaralharComSemente(BANCO.map(function (q) { return q.id; }), 1000 + ciclo);
+  return perm.slice(pos * PERGUNTAS_POR_RODADA, (pos + 1) * PERGUNTAS_POR_RODADA);
+}
+function porIds(ids) {
+  var out = [];
+  for (var i = 0; i < ids.length; i++) {
+    var q = BANCO.filter(function (x) { return x.id === ids[i]; })[0];
+    if (!q) return null;
+    out.push(q);
+  }
+  return out;
+}
 
 /* ===== util ===== */
 var $ = function (id) { return document.getElementById(id); };
@@ -404,7 +866,7 @@ var timeLeft = TIME_LIMIT, timerId = null, startedAt = 0;
 var pollId = null, lastData = null;
 var answers = [], chosen = -1, qStart = 0, resends = 0, seen = 0;   // seen: maior nº de respostas já confirmado pela planilha
 var order = [0, 1, 2, 3];      // ordem sorteada das alternativas da pergunta atual (índices originais)
-var STORE_KEY = "gincana-licao-08:v2";   // v2: descarta partidas guardadas pela versão antiga (sem controle de confirmação)
+var STORE_KEY = "gincana-licao-08:v3";   // v3: estado inclui rodada e perguntas sorteadas; descarta partidas de versões antigas
 var MAX_RESUME_MS = 30 * 60 * 1000;   // pergunta em andamento há mais que isso: recomeça
 
 /* ===== estrutura da tela ===== */
@@ -457,11 +919,11 @@ async function flush() {
   sending = false;
 }
 
-function fetchRanking(cb, extra) {
+function fetchRanking(cb, extra, ms) {
   if (!API_URL) { cb(null); return; }
   var name = "rk_" + Date.now() + "_" + Math.floor(Math.random() * 1000);
   var s = document.createElement("script");
-  var timer = setTimeout(function () { cleanup(); cb(null); }, 12000);
+  var timer = setTimeout(function () { cleanup(); cb(null); }, ms || 12000);
   function cleanup() { clearTimeout(timer); delete window[name]; s.remove(); }
   window[name] = function (data) { cleanup(); cb(data); };
   s.onerror = function () { cleanup(); cb(null); };
@@ -489,7 +951,7 @@ function minhaLinha(rows) {
 }
 
 function renderRanking(data) {
-  if (data && data.ok) lastData = data;
+  if (data && data.ok) { lastData = data; if (typeof data.rodada === "number") rodada = data.rodada; }
   var d = lastData;
   var sub = $("k-sub"), list = $("k-list");
 
@@ -499,14 +961,15 @@ function renderRanking(data) {
     return;
   }
   var rows = d.ranking || [];
+  var pre = typeof d.rodada === "number" ? "Rodada " + (d.rodada + 1) + " · " : "";
   if (!rows.length) {
-    sub.textContent = "Ainda não há resultados registrados.";
+    sub.textContent = pre + "Ainda não há resultados registrados.";
     list.innerHTML = '<li class="vazio">Aguardando os primeiros jogadores.</li>';
     $("k-me").hidden = true;
     updateSync();
     return;
   }
-  sub.textContent = rows.length + (rows.length === 1 ? " jogador" : " jogadores") + " · atualiza sozinho";
+  sub.textContent = pre + rows.length + (rows.length === 1 ? " jogador" : " jogadores") + " · atualiza sozinho";
 
   var max = Math.max.apply(null, rows.map(function (r) { return r.points; }).concat([1]));
   var mi = IS_PAINEL ? -1 : minhaLinha(rows);
@@ -530,6 +993,11 @@ function updateSync() {
   var el = $("r-sync");
   if (stage !== "result") return;
   if (!API_URL) { el.className = "sync"; el.textContent = ""; return; }
+  if (lastData && sessionDoServidor && typeof lastData.rodada === "number" && lastData.rodada !== sessionRodada) {
+    el.className = "sync";
+    el.textContent = "Esta rodada foi encerrada pelo organizador. Toque em Jogar novamente para entrar na rodada nova.";
+    return;
+  }
   var n = lastData && lastData.answered ? (lastData.answered[sessionId] || 0) : 0;
   var total = QUESTIONS.length;
   if (lastData) {
@@ -547,12 +1015,30 @@ function updateSync() {
 
 /* ===== entrada ===== */
 $("g-nome").addEventListener("input", function () { $("g-start").disabled = $("g-nome").value.trim().length < 2; });
-$("g-nome").addEventListener("keydown", function (e) { if (e.key === "Enter" && !$("g-start").disabled) startGame(); });
-$("g-start").addEventListener("click", startGame);
+$("g-nome").addEventListener("keydown", function (e) { if (e.key === "Enter" && !$("g-start").disabled) iniciar(); });
+$("g-start").addEventListener("click", iniciar);
+
+function iniciar() {
+  var btn = $("g-start");
+  if (btn.disabled) return;
+  btn.disabled = true;
+  btn.textContent = "Carregando...";
+  // pergunta ao script qual é a rodada vigente (para todos jogarem o mesmo conjunto de perguntas)
+  fetchRanking(function (d) {
+    if (d && d.ok && typeof d.rodada === "number") rodada = d.rodada;
+    btn.textContent = "Começar";
+    btn.disabled = $("g-nome").value.trim().length < 2;
+    startGame();
+  }, "", 5000);
+}
 
 function startGame() {
   playerName = $("g-nome").value.trim().slice(0, 40);
   sessionId = newId();
+  sessionDoServidor = typeof rodada === "number";
+  sessionRodada = sessionDoServidor ? rodada : Math.floor(Math.random() * 1000000);   // sem servidor: conjunto local
+  qids = selecionarIds(sessionRodada);
+  QUESTIONS = porIds(qids);
   lastData = null;
   current = 0; score = 0; hits = 0;
   answers = []; chosen = -1; resends = 0; seen = 0;
@@ -621,7 +1107,7 @@ function pointsFor(rem) { return 100 + Math.round((rem / TIME_LIMIT) * 100); }
 function lockOptions() { document.querySelectorAll("#q-opts .opt").forEach(function (b) { b.disabled = true; }); }
 
 function payloadFrom(a) {
-  return { app: "gincana", action: "answer", session: sessionId, name: playerName, q: a.q,
+  return { app: "gincana", action: "answer", rodada: sessionDoServidor ? sessionRodada : undefined, session: sessionId, name: playerName, q: a.q,
     choice: a.choice, correct: a.correct, seconds: a.seconds, points: a.points };
 }
 
@@ -735,7 +1221,8 @@ function saveState() {
     localStorage.setItem(STORE_KEY, JSON.stringify({
       name: playerName, session: sessionId, stage: stage, tab: tab,
       current: current, score: score, hits: hits, qStart: qStart,
-      answered: answered, chosen: chosen, order: order, answers: answers, seen: seen, savedAt: Date.now()
+      answered: answered, chosen: chosen, order: order, answers: answers, seen: seen,
+      rodada: sessionRodada, doServidor: sessionDoServidor, qids: qids, savedAt: Date.now()
     }));
   } catch (e) {}
 }
@@ -776,8 +1263,13 @@ function resume() {
   if (!s.session || (s.stage !== "quiz" && s.stage !== "result")) return;
   if (s.stage === "quiz" && Date.now() - (s.savedAt || 0) > MAX_RESUME_MS) return;
 
+  var qs = porIds(Array.isArray(s.qids) ? s.qids : []);
+  if (!qs || qs.length !== PERGUNTAS_POR_RODADA) return;     // estado inválido: começa do zero
   playerName = s.name || "";
   sessionId = s.session;
+  QUESTIONS = qs; qids = s.qids;
+  sessionRodada = typeof s.rodada === "number" ? s.rodada : null;
+  sessionDoServidor = !!s.doServidor;
   current = Math.min(Math.max(s.current | 0, 0), QUESTIONS.length - 1);
   score = s.score | 0;
   hits = s.hits | 0;
@@ -837,7 +1329,8 @@ function limparRodada() {
       return;
     }
     $("adm-senha").value = "";
-    admMsg("Rodada limpa: " + d.apagadas + (d.apagadas === 1 ? " resposta apagada." : " respostas apagadas."), "ok");
+    admMsg("Rodada limpa: " + d.apagadas + (d.apagadas === 1 ? " resposta apagada." : " respostas apagadas.") +
+      (typeof d.rodada === "number" ? " Começa a rodada " + (d.rodada + 1) + ", com 10 perguntas novas." : ""), "ok");
     fetchRanking(renderRanking);
     setTimeout(fecharAdm, 3000);
   }, "action=reset&senha=" + encodeURIComponent(senha));
@@ -863,6 +1356,7 @@ if (!API_URL) {
   fetchRanking(function (d) {
     if (!d) avisoPlanilha("Não consegui falar com a planilha. Você pode jogar, mas seus pontos não serão salvos. Avise o responsável.");
     else if (!d.ok) avisoPlanilha("A planilha respondeu com erro: " + d.error);
+    else if (typeof d.rodada === "number") rodada = d.rodada;
   });
 }
 
