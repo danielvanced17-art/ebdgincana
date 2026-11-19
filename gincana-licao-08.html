@@ -1,0 +1,879 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#09090A">
+<title>Gincana · Lição 08</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#09090A; --s1:#141416; --s2:#1D1D20; --line:rgba(255,255,255,.09);
+  --tx:#F5F3F0; --mu:#9A9AA2;
+  --acc:#FF5A1F; --acc-d:#C2410C; --acct:#FF7A3D; --warm:rgba(255,106,43,.17);
+  --on-acc:#1A0A03;
+  --ok:#6FD9A6; --ok-bg:rgba(111,217,166,.12);
+  --err:#FF8A7A; --err-bg:rgba(255,138,122,.12);
+  color-scheme:dark;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+}
+html{scroll-padding-top:env(safe-area-inset-top,0px);background:var(--bg)}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;min-height:100vh;min-height:100dvh;background:var(--bg);color:var(--tx);font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased}
+/* brilho de fundo, fixo na base da tela */
+body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:radial-gradient(70% 38% at 50% 108%,color-mix(in srgb,var(--acc) 34%,transparent),transparent 72%),
+             radial-gradient(60% 30% at 0% 0%,color-mix(in srgb,var(--acc) 10%,transparent),transparent 70%)}
+button,input{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--acct);outline-offset:2px}
+[hidden]{display:none!important}
+h1,h2,h3,p{margin:0}
+
+.app{position:relative;z-index:1;max-width:480px;margin:0 auto;padding:22px max(18px,env(safe-area-inset-right)) 128px max(18px,env(safe-area-inset-left))}
+
+/* cabeçalho de tela */
+.head{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:22px}
+.hi{font-size:30px;font-weight:800;letter-spacing:-.025em;line-height:1.12;min-width:0;overflow-wrap:anywhere}
+.sub{color:var(--mu);margin-top:6px;font-size:15px}
+.av{flex:none;width:44px;height:44px;border-radius:50%;display:grid;place-items:center;font-weight:700;font-size:15px;
+  background:linear-gradient(145deg,var(--acc),var(--acc-d));color:var(--on-acc)}
+.small{font-size:13px;color:var(--mu)}
+.sec{font-size:17px;font-weight:700;margin:26px 0 10px}
+
+/* cartão com brilho no canto */
+.card{position:relative;overflow:hidden;background:var(--s1);border:1px solid var(--line);border-radius:20px;padding:18px;margin-bottom:14px}
+.card::after{content:"";position:absolute;right:-64px;top:-64px;width:190px;height:190px;border-radius:50%;
+  background:radial-gradient(circle,var(--warm),transparent 70%);pointer-events:none;z-index:0}
+.card>*{position:relative;z-index:1}
+
+/* número grande em destaque */
+.row{display:flex;justify-content:space-between;align-items:flex-end;gap:12px}
+.right{text-align:right}
+.big{font-size:56px;line-height:1;font-weight:800;letter-spacing:-.04em;font-variant-numeric:tabular-nums}
+.big.acc{color:var(--acct)}
+.big.low{color:var(--err)}
+
+/* barra de tempo */
+.track{height:6px;border-radius:999px;background:rgba(255,255,255,.08);overflow:hidden;margin-top:16px}
+.track span{display:block;height:100%;width:100%;border-radius:999px;background:linear-gradient(90deg,var(--acc-d),var(--acct))}
+.track span.low{background:var(--err)}
+
+/* pergunta e alternativas */
+.meta{display:flex;justify-content:space-between;color:var(--mu);font-size:13px;font-weight:500}
+.q{font-size:19px;font-weight:700;letter-spacing:-.01em;line-height:1.38;margin:10px 0 16px}
+.opts{display:flex;flex-direction:column;gap:10px}
+.opt{display:flex;align-items:center;gap:12px;width:100%;text-align:left;background:var(--s2);border:1px solid var(--line);
+  border-radius:14px;padding:12px 14px;min-height:56px;cursor:pointer;font-weight:500;line-height:1.35;transition:border-color .15s,background .15s}
+.opt .L{flex:none;width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:rgba(255,255,255,.07);font-weight:700;font-size:13px;color:var(--mu)}
+.opt .t{flex:1;min-width:0}
+.opt:hover:not(:disabled){border-color:var(--acct)}
+.opt:disabled{cursor:default}
+.opt.correct{border-color:var(--ok);background:var(--ok-bg)}
+.opt.correct .L{background:var(--ok);color:#06210F}
+.opt.wrong{border-color:var(--err);background:var(--err-bg)}
+.opt.wrong .L{background:var(--err);color:#2A0A05}
+
+.fb{margin-top:14px;padding:12px 14px;border-radius:14px;font-size:15px;line-height:1.5;background:var(--s2);border:1px solid var(--line)}
+.fb strong{display:block;margin-bottom:4px}
+.fb.ok{background:var(--ok-bg);border-color:var(--ok)} .fb.ok strong{color:var(--ok)}
+.fb.bad{background:var(--err-bg);border-color:var(--err)} .fb.bad strong{color:var(--err)}
+.fb.out{border-color:var(--acct)} .fb.out strong{color:var(--acct)}
+
+/* botões */
+.cta{width:100%;border:0;border-radius:14px;padding:16px 18px;background:linear-gradient(135deg,var(--acct),var(--acc));color:var(--on-acc);
+  font-weight:700;font-size:17px;cursor:pointer;min-height:56px;margin-top:16px;box-shadow:0 8px 28px -10px var(--acc)}
+.cta:active{transform:translateY(1px)}
+.cta[disabled]{opacity:.4;cursor:default;transform:none;box-shadow:none}
+.link{display:block;width:100%;background:none;border:0;padding:12px 14px;font-weight:600;cursor:pointer;color:var(--acct);margin-top:6px}
+.link.mute{color:var(--mu)}
+
+/* classificação */
+.rank{list-style:none;margin:0;padding:0}
+.rank li{padding:12px 0;border-bottom:1px solid var(--line)}
+.rank li:last-child{border-bottom:0}
+.rank .r{display:flex;justify-content:space-between;gap:12px;align-items:baseline}
+.rank .n{min-width:0;overflow-wrap:anywhere}
+.rank .pts{font-weight:700;font-variant-numeric:tabular-nums;white-space:nowrap}
+.rank .meter{height:8px;border-radius:4px;background:rgba(255,255,255,.07);overflow:hidden;margin-top:8px}
+.rank .meter span{display:block;height:100%;border-radius:4px;background:rgba(255,255,255,.3)}
+.rank li.me .n{color:var(--acct);font-weight:700}
+.rank li.me .meter span{background:linear-gradient(90deg,var(--acc-d),var(--acct))}
+.vazio{color:var(--mu);font-size:15px;padding:6px 0}
+
+/* sincronização */
+.sync{margin-top:14px;font-size:13px;color:var(--mu)}
+.sync.done{color:var(--ok)}
+.sync.pend{color:var(--acct)}
+
+/* barra inferior flutuante */
+.nav{position:fixed;left:0;right:0;bottom:0;z-index:10;padding:0 18px calc(14px + env(safe-area-inset-bottom,0px));pointer-events:none}
+.nav .in{pointer-events:auto;max-width:340px;margin:0 auto;display:flex;gap:4px;padding:6px;border-radius:999px;
+  background:rgba(29,29,32,.82);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border:1px solid var(--line)}
+.nav button{flex:1;border:0;background:none;border-radius:999px;padding:12px 8px;min-height:46px;font-weight:600;font-size:15px;color:var(--mu);cursor:pointer}
+.nav button[aria-current="page"]{background:var(--acc);color:var(--on-acc);font-weight:700}
+
+/* entrada */
+.gate{position:fixed;inset:0;z-index:30;background:var(--bg);display:flex;align-items:center;justify-content:center;
+  padding:calc(20px + env(safe-area-inset-top,0px)) 18px calc(20px + env(safe-area-inset-bottom,0px));overflow:auto}
+.gate::before{content:"";position:fixed;inset:0;pointer-events:none;
+  background:radial-gradient(70% 38% at 50% 108%,color-mix(in srgb,var(--acc) 34%,transparent),transparent 72%),
+             radial-gradient(60% 30% at 0% 0%,color-mix(in srgb,var(--acc) 10%,transparent),transparent 70%)}
+.gate .box{position:relative;width:100%;max-width:380px}
+.gate h1{font-size:38px;font-weight:800;letter-spacing:-.03em;margin-bottom:6px}
+.gate label{display:block;font-size:13px;color:var(--mu);margin:22px 0 6px}
+.gate input{width:100%;background:var(--s1);border:1px solid var(--line);border-radius:12px;padding:14px;min-height:50px}
+.gate input:focus{border-color:var(--acct)}
+.gate .note{font-size:13px;color:var(--mu);margin-top:16px;line-height:1.5}
+.gate .note b{color:var(--tx);font-weight:600}
+.alert{margin-top:16px;padding:12px 14px;border-radius:14px;background:var(--err-bg);border:1px solid var(--err);color:var(--err);font-size:13px;line-height:1.5}
+
+/* modo painel (projeção): ?painel=1 */
+body.painel .app{max-width:clamp(720px,72vw,1300px);padding-bottom:48px}
+body.painel #v-rank{max-width:none}
+body.painel .hi{font-size:clamp(34px,3.2vw,60px)}
+body.painel .sub{font-size:clamp(17px,1.5vw,26px)}
+body.painel .card{padding:clamp(20px,2vw,34px)}
+body.painel .rank li{padding:clamp(14px,1.4vw,24px) 0}
+body.painel .rank .r{font-size:clamp(22px,2.4vw,42px)}
+body.painel .rank .meter{height:clamp(10px,1vw,16px);margin-top:10px}
+body.painel .rank li:first-child .n{color:var(--acct);font-weight:800}
+body.painel .rank li:first-child .meter span{background:linear-gradient(90deg,var(--acc-d),var(--acct))}
+/* organizador */
+.field{width:100%;background:var(--s2);border:1px solid var(--line);border-radius:12px;padding:14px;min-height:50px;margin:6px 0 4px}
+.field:focus{border-color:var(--acct)}
+.cta.danger{background:var(--err);color:#2A0A05;box-shadow:none}
+#adm{margin-top:10px}
+
+/* ===== adaptação à resolução ===== */
+@media (max-width:359px){                      /* celulares muito pequenos */
+  .app{padding-left:14px;padding-right:14px}
+  .hi{font-size:25px} .big{font-size:44px} .q{font-size:17px}
+  .opt{padding:10px 12px;gap:10px} .card{padding:15px}
+  .gate h1{font-size:32px}
+}
+@media (min-width:600px){                      /* tablets */
+  .app{max-width:640px;padding-top:36px}
+  .hi{font-size:36px} .sub{font-size:17px}
+  .big{font-size:68px}
+  .card{padding:26px;border-radius:24px}
+  .meta{font-size:15px}
+  .q{font-size:23px;margin:12px 0 20px}
+  .opts{gap:12px}
+  .opt{font-size:18px;padding:16px 18px;min-height:66px;border-radius:16px}
+  .opt .L{width:34px;height:34px;font-size:15px}
+  .fb{font-size:17px;padding:16px 18px}
+  .cta{font-size:19px;min-height:64px}
+  .rank .r{font-size:18px} .rank li{padding:15px 0}
+  .nav .in{max-width:400px} .nav button{font-size:17px;min-height:52px}
+  .gate .box{max-width:440px} .gate h1{font-size:44px}
+  .av{width:52px;height:52px;font-size:18px}
+}
+@media (min-width:1000px){                     /* computador / telão: cronômetro ao lado da pergunta */
+  .app{max-width:1060px}
+  #s-quiz{display:grid;grid-template-columns:310px minmax(0,1fr);column-gap:24px;align-items:start}
+  #s-quiz .head{grid-column:1 / -1}
+  #s-quiz .c-timer{position:sticky;top:24px}
+  #s-quiz .c-timer .row{flex-direction:column;align-items:flex-start;gap:18px}
+  #s-quiz .c-timer .right{text-align:left}
+  #s-quiz .c-timer .big{font-size:72px}
+  .q{font-size:26px} .opt{font-size:19px}
+  #s-result,#v-rank{max-width:720px;margin-left:auto;margin-right:auto}
+}
+@media (max-height:520px) and (orientation:landscape){   /* celular deitado */
+  .app{padding-top:14px;padding-bottom:92px}
+  .head{margin-bottom:12px} .hi{font-size:24px} .sub{font-size:13px}
+  .big{font-size:38px} .card{padding:14px}
+  .q{font-size:16px;margin:8px 0 12px}
+  .opt{font-size:15px;min-height:46px;padding:8px 12px}
+  .gate{align-items:flex-start}
+}
+@media (prefers-reduced-motion:reduce){.opt,.track span{transition:none}}
+</style>
+</head>
+<body>
+
+<main class="app">
+
+  <!-- ============ JOGAR ============ -->
+  <section id="v-jogo">
+
+    <!-- pergunta -->
+    <div id="s-quiz" hidden>
+      <div class="head">
+        <div>
+          <h1 class="hi">Gincana</h1>
+          <p class="sub" id="q-sub"></p>
+        </div>
+        <div class="av" id="q-av" aria-hidden="true"></div>
+      </div>
+
+      <div class="card c-timer">
+        <div class="row">
+          <div><div class="big acc" id="t-num">10</div><div class="small">segundos</div></div>
+          <div class="right"><div class="big" id="t-pts">0</div><div class="small">pontos</div></div>
+        </div>
+        <div class="track" aria-hidden="true"><span id="t-bar"></span></div>
+      </div>
+
+      <div class="card c-quest">
+        <div class="meta"><span id="q-count"></span><span>Quanto mais rápido, mais pontos</span></div>
+        <p class="q" id="q-text"></p>
+        <div class="opts" id="q-opts"></div>
+        <div class="fb" id="q-fb" role="status" hidden>
+          <strong id="q-fb-t"></strong>
+          <span id="q-fb-x"></span>
+        </div>
+        <button class="cta" id="q-next" type="button" disabled>Próxima</button>
+      </div>
+    </div>
+
+    <!-- resultado -->
+    <div id="s-result" hidden>
+      <div class="head">
+        <div>
+          <h1 class="hi">Resultado</h1>
+          <p class="sub" id="r-sub"></p>
+        </div>
+        <div class="av" id="r-av" aria-hidden="true"></div>
+      </div>
+
+      <div class="card">
+        <div class="small">Participante</div>
+        <div style="font-size:22px;font-weight:600;line-height:1.25;margin-top:2px" id="r-nome"></div>
+        <div class="row" style="margin-top:16px">
+          <div><div class="big acc" id="r-ac"></div><div class="small">acertos</div></div>
+          <div class="right"><div class="big" id="r-pts"></div><div class="small">pontos</div></div>
+        </div>
+        <p class="sub" id="r-verdict" style="margin-top:16px"></p>
+        <div class="sync" id="r-sync"></div>
+      </div>
+
+      <button class="cta" id="r-rank" type="button" style="margin-top:0">Ver classificação geral</button>
+      <button class="link mute" id="r-again" type="button">Jogar novamente</button>
+    </div>
+  </section>
+
+  <!-- ============ CLASSIFICAÇÃO ============ -->
+  <section id="v-rank" hidden>
+    <div class="head">
+      <div>
+        <h1 class="hi" id="k-hi">Classificação</h1>
+        <p class="sub" id="k-sub">Carregando...</p>
+      </div>
+      <div class="av" id="k-av" aria-hidden="true" hidden></div>
+    </div>
+
+    <div class="card" id="k-me" hidden>
+      <div class="small">Sua posição</div>
+      <div class="row" style="margin-top:10px">
+        <div><div class="big acc" id="k-pos"></div><div class="small" id="k-de"></div></div>
+        <div class="right"><div class="big" id="k-pts"></div><div class="small">pontos</div></div>
+      </div>
+    </div>
+
+    <h2 class="sec" id="k-sec">Resultado de todos</h2>
+    <div class="card"><ul class="rank" id="k-list"></ul></div>
+
+    <div id="adm" hidden>
+      <button class="link mute" id="adm-abrir" type="button">Limpar rodada</button>
+      <button class="link mute" id="adm-voltar" type="button">Voltar ao jogo</button>
+      <div class="card" id="adm-box" hidden>
+        <h2 class="sec" style="margin-top:0">Limpar rodada</h2>
+        <p class="sub" style="margin-top:0">Apaga todas as respostas e o placar na planilha. Não dá para desfazer.</p>
+        <label for="adm-senha" class="small" style="display:block;margin-top:16px">Senha do organizador (Daniel)</label>
+        <input class="field" id="adm-senha" type="password" autocomplete="off">
+        <button class="cta danger" id="adm-ok" type="button">Apagar tudo</button>
+        <button class="link mute" id="adm-cancel" type="button">Cancelar</button>
+        <div class="fb" id="adm-msg" role="status" hidden></div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- barra inferior (aparece só depois de jogar) -->
+<nav class="nav" id="nav" aria-label="Seções" hidden><div class="in">
+  <button id="n-jogo" type="button" aria-current="page">Jogar</button>
+  <button id="n-rank" type="button">Ranking</button>
+</div></nav>
+
+<!-- ============ ENTRADA ============ -->
+<div class="gate" id="gate">
+  <div class="box">
+    <h1>Gincana</h1>
+    <p class="sub">Lição 08 · Unidade e Alegria no Senhor</p>
+    <label for="g-nome">Seu nome</label>
+    <input id="g-nome" type="text" maxlength="40" placeholder="Digite seu nome" autocomplete="off">
+    <button class="cta" id="g-start" type="button" disabled>Começar</button>
+    <p class="note">São <b>10 perguntas</b> com <b>10 segundos</b> cada. Acertar vale até 200 pontos: quanto mais rápido você responder certo, mais pontos ganha. Errar ou deixar o tempo acabar vale zero.</p>
+    <button class="link mute" id="g-org" type="button" style="margin-top:22px">Organizador</button>
+    <div class="alert" id="g-alert" hidden>A planilha ainda não foi configurada (<code>API_URL</code>). O jogo funciona, mas nada será gravado.</div>
+  </div>
+</div>
+
+<script>
+/* ===== CONFIGURAÇÃO =====
+   Cole aqui o endereço do App da Web (termina em /exec) gerado pelo Apps Script. */
+var API_URL = "https://script.google.com/macros/s/AKfycbwrwV7tgzCCRzHqtx1ujmoDqK-YceAUQFa5gyLV3ZwU4v_WHavig6Pg1rf0uRfGgZzE/exec";
+
+var TIME_LIMIT = 10;
+var MAX_POINTS = 200;
+var POLL_PLAYER = 8000;
+var POLL_PAINEL = 4000;
+var IS_PAINEL = new URLSearchParams(location.search).get("painel") === "1";
+
+var QUESTIONS = [
+  { q: "Qual versículo serve de texto principal para a lição?",
+    options: ["Filipenses 4.4: \"Regozijai-vos, sempre, no Senhor\"",
+              "Salmo 133.1: \"Como é bom e suave habitarem os irmãos em união\"",
+              "Mateus 18.19: \"Se dois de vós concordarem na terra\"",
+              "João 17.23: \"Eu neles, e tu em mim\""],
+    answer: 0,
+    explain: "O texto principal é Filipenses 4.4, com o chamado a regozijar-se sempre no Senhor." },
+  { q: "Qual destas expressões NÃO é um dos vocativos usados por Paulo para os filipenses?",
+    options: ["Amados", "Queridos irmãos", "Fiéis servos de Roma", "Minha alegria e coroa"],
+    answer: 2,
+    explain: "Os vocativos são amados, queridos irmãos, minha alegria e coroa. \"Fiéis servos de Roma\" não aparece." },
+  { q: "Quais mulheres tiveram uma divergência na igreja de Filipos e foram mencionadas por Paulo?",
+    options: ["Lídia e Priscila", "Evódia e Síntique", "Marta e Maria", "Ana e Rute"],
+    answer: 1,
+    explain: "Paulo cita Evódia e Síntique em Filipenses 4.2-3 e pede que se reconciliem no Senhor." },
+  { q: "Segundo a lição, qual é o significado de \"epieikes\", traduzida por equidade?",
+    options: ["Riqueza e prosperidade", "Moderação, afabilidade, gentileza e suavidade",
+              "Força e coragem militar", "Sabedoria e conhecimento"],
+    answer: 1,
+    explain: "A palavra grega também pode significar moderação, afabilidade, gentileza e suavidade." },
+  { q: "Qual é o tema da leitura de segunda-feira (Salmo 133.1)?",
+    options: ["A força de estar juntos", "A bênção de estar juntos",
+              "A autoridade que a unidade gera", "O alinhamento dos entendimentos"],
+    answer: 1,
+    explain: "Segunda-feira: Salmo 133.1, a bênção de estar juntos. A força de estar juntos é terça-feira." },
+  { q: "De acordo com a lição, os conflitos são sinal de fracasso espiritual?",
+    options: ["Sim, sempre indicam falta de fé",
+              "Não, são oportunidade de crescimento, desde que sejam bem tratados",
+              "Sim, mas somente entre líderes",
+              "Não, porque cristãos maduros nunca discordam"],
+    answer: 1,
+    explain: "A lição ensina que o problema não é o conflito em si, mas a forma como ele é tratado." },
+  { q: "Qual é a principal recomendação de Paulo às duas líderes em conflito?",
+    options: ["Que se afastassem uma da outra", "Que sentissem o mesmo no Senhor",
+              "Que deixassem a igreja de Filipos", "Que escolhessem um lado na disputa"],
+    answer: 1,
+    explain: "Paulo pediu que sentissem o mesmo no Senhor (v. 2) e solicitou ajuda de outros cristãos para a reconciliação (v. 3)." },
+  { q: "Na expressão \"perto está o Senhor\", a lição aponta dois sentidos. Quais são eles?",
+    options: ["Riqueza e saúde", "Presença de Deus no cotidiano e a volta de Cristo",
+              "Perseguição e martírio", "Ensino da Lei e dos profetas"],
+    answer: 1,
+    explain: "Há o sentido da proximidade de Deus diante das lutas e o sentido escatológico, da proximidade do Dia do Senhor." },
+  { q: "Segundo a lição, a alegria cristã depende das circunstâncias da vida?",
+    options: ["Sim, ela cresce quando os desejos se realizam",
+              "Não, ela é um fruto do Espírito, ligado ao relacionamento com Cristo",
+              "Sim, ela depende da prosperidade financeira",
+              "Não, ela é apenas um sentimento passageiro"],
+    answer: 1,
+    explain: "A alegria que Paulo descreve não é temporal nem circunstancial, mas nasce do relacionamento com o Senhor." },
+  { q: "A pergunta \"Sou eu, por acaso, guardador do meu irmão?\" aparece em qual contexto bíblico?",
+    options: ["A conversa entre Caim e Deus, após a morte de Abel", "A parábola do bom samaritano",
+              "A chamada dos doze discípulos", "O sermão do monte"],
+    answer: 0,
+    explain: "A pergunta é de Caim, em Gênesis 4.9, quando Deus lhe pergunta sobre Abel." }
+];
+
+/* ===== util ===== */
+var $ = function (id) { return document.getElementById(id); };
+function esc(s) { return String(s).replace(/[&<>"']/g, function (c) { return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]; }); }
+function newId() { return "g" + Date.now().toString(36) + Math.random().toString(36).slice(2, 8); }
+function inicial(n) { return (n || "?").trim().charAt(0).toUpperCase(); }
+function embaralhar(n) {
+  var a = [], i, j, t;
+  for (i = 0; i < n; i++) a.push(i);
+  for (i = n - 1; i > 0; i--) { j = Math.floor(Math.random() * (i + 1)); t = a[i]; a[i] = a[j]; a[j] = t; }
+  return a;
+}
+
+/* ===== estado ===== */
+var playerName = "", sessionId = "";
+var stage = "idle";            // idle | quiz | result
+var tab = "jogo";              // jogo | rank (só na etapa result)
+var current = 0, score = 0, hits = 0, answered = false;
+var timeLeft = TIME_LIMIT, timerId = null, startedAt = 0;
+var pollId = null, lastData = null;
+var answers = [], chosen = -1, qStart = 0, resends = 0, seen = 0;   // seen: maior nº de respostas já confirmado pela planilha
+var order = [0, 1, 2, 3];      // ordem sorteada das alternativas da pergunta atual (índices originais)
+var STORE_KEY = "gincana-licao-08:v2";   // v2: descarta partidas guardadas pela versão antiga (sem controle de confirmação)
+var MAX_RESUME_MS = 30 * 60 * 1000;   // pergunta em andamento há mais que isso: recomeça
+
+/* ===== estrutura da tela ===== */
+function chrome() {
+  $("gate").hidden = IS_PAINEL || stage !== "idle";
+  $("s-quiz").hidden = stage !== "quiz";
+  $("s-result").hidden = stage !== "result" || tab !== "jogo";
+  $("v-jogo").hidden = IS_PAINEL || tab !== "jogo" || stage === "idle";
+  $("v-rank").hidden = !(IS_PAINEL || (stage === "result" && tab === "rank"));
+  $("nav").hidden = IS_PAINEL || stage !== "result";
+  var j = $("n-jogo"), r = $("n-rank");
+  if (tab === "jogo") { j.setAttribute("aria-current", "page"); r.removeAttribute("aria-current"); }
+  else { r.setAttribute("aria-current", "page"); j.removeAttribute("aria-current"); }
+  syncPolling();
+}
+
+function setTab(t) {
+  tab = t;
+  chrome();
+  saveState();
+  window.scrollTo(0, 0);
+  if (t === "rank") fetchRanking(renderRanking);
+}
+
+/* ===== comunicação com a planilha ===== */
+var queue = [], sending = false, sentOk = 0;
+
+function enqueue(payload) {
+  if (!API_URL) return;
+  queue.push({ payload: payload, tries: 0 });
+  flush();
+}
+
+async function flush() {
+  if (sending) return;
+  sending = true;
+  while (queue.length) {
+    var item = queue[0];
+    try {
+      // text/plain evita pré-voo CORS; o Apps Script lê o corpo normalmente.
+      await fetch(API_URL, { method: "POST", mode: "no-cors",
+        headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(item.payload) });
+      queue.shift(); sentOk++;
+    } catch (e) {
+      item.tries++;
+      if (item.tries >= 6) { queue.shift(); continue; }
+      await new Promise(function (r) { setTimeout(r, 2500); });
+    }
+  }
+  sending = false;
+}
+
+function fetchRanking(cb, extra) {
+  if (!API_URL) { cb(null); return; }
+  var name = "rk_" + Date.now() + "_" + Math.floor(Math.random() * 1000);
+  var s = document.createElement("script");
+  var timer = setTimeout(function () { cleanup(); cb(null); }, 12000);
+  function cleanup() { clearTimeout(timer); delete window[name]; s.remove(); }
+  window[name] = function (data) { cleanup(); cb(data); };
+  s.onerror = function () { cleanup(); cb(null); };
+  s.src = API_URL + (API_URL.indexOf("?") >= 0 ? "&" : "?") + "app=gincana&callback=" + name + "&t=" + Date.now() + (extra ? "&" + extra : "");
+  document.body.appendChild(s);
+}
+
+function syncPolling() {
+  var quer = IS_PAINEL || stage === "result";
+  if (quer && !pollId) {
+    var tick = function () { fetchRanking(renderRanking); };
+    tick();
+    pollId = setInterval(tick, IS_PAINEL ? POLL_PAINEL : POLL_PLAYER);
+  } else if (!quer && pollId) {
+    clearInterval(pollId); pollId = null;
+  }
+}
+
+/* ===== classificação ===== */
+function minhaLinha(rows) {
+  var n = playerName.toLowerCase();
+  for (var i = 0; i < rows.length; i++) if (rows[i].id === sessionId) return i;
+  for (var j = 0; j < rows.length; j++) if (String(rows[j].name).toLowerCase() === n) return j;
+  return -1;
+}
+
+function renderRanking(data) {
+  if (data && data.ok) lastData = data;
+  var d = lastData;
+  var sub = $("k-sub"), list = $("k-list");
+
+  if (!d) {
+    sub.textContent = API_URL ? "Não foi possível carregar agora. Tentando de novo..." : "Planilha não configurada.";
+    updateSync();
+    return;
+  }
+  var rows = d.ranking || [];
+  if (!rows.length) {
+    sub.textContent = "Ainda não há resultados registrados.";
+    list.innerHTML = '<li class="vazio">Aguardando os primeiros jogadores.</li>';
+    $("k-me").hidden = true;
+    updateSync();
+    return;
+  }
+  sub.textContent = rows.length + (rows.length === 1 ? " jogador" : " jogadores") + " · atualiza sozinho";
+
+  var max = Math.max.apply(null, rows.map(function (r) { return r.points; }).concat([1]));
+  var mi = IS_PAINEL ? -1 : minhaLinha(rows);
+  list.innerHTML = rows.map(function (r, i) {
+    return '<li class="' + (i === mi ? "me" : "") + '"><div class="r"><span class="n">' + (i + 1) + ". " + esc(r.name) +
+      '</span><span class="pts">' + r.points + ' pts</span></div><div class="meter"><span style="width:' +
+      (r.points / max * 100) + '%"></span></div></li>';
+  }).join("");
+
+  var me = $("k-me");
+  if (mi >= 0) {
+    $("k-pos").textContent = (mi + 1) + "º";
+    $("k-de").textContent = "posição de " + rows.length;
+    $("k-pts").textContent = rows[mi].points;
+    me.hidden = false;
+  } else { me.hidden = true; }
+  updateSync();
+}
+
+function updateSync() {
+  var el = $("r-sync");
+  if (stage !== "result") return;
+  if (!API_URL) { el.className = "sync"; el.textContent = ""; return; }
+  var n = lastData && lastData.answered ? (lastData.answered[sessionId] || 0) : 0;
+  var total = QUESTIONS.length;
+  if (lastData) {
+    if (n > seen) { seen = n; saveState(); }
+    // Reenvia só respostas que se perderam no caminho: a planilha ainda não confirmou tudo
+    // e a contagem nunca diminuiu. Se diminuiu (linhas apagadas à mão), não recria nada.
+    if (n === seen && n < answers.length && resends < 3 && !queue.length && !sending) {
+      resends++;                                 // o servidor ignora duplicatas
+      answers.forEach(function (a) { enqueue(payloadFrom(a)); });
+    }
+  }
+  if (n >= total) { el.className = "sync done"; el.textContent = "Resultado registrado na planilha (" + n + "/" + total + " respostas)."; }
+  else { el.className = "sync pend"; el.textContent = "Registrando na planilha... " + n + "/" + total + " confirmadas"; }
+}
+
+/* ===== entrada ===== */
+$("g-nome").addEventListener("input", function () { $("g-start").disabled = $("g-nome").value.trim().length < 2; });
+$("g-nome").addEventListener("keydown", function (e) { if (e.key === "Enter" && !$("g-start").disabled) startGame(); });
+$("g-start").addEventListener("click", startGame);
+
+function startGame() {
+  playerName = $("g-nome").value.trim().slice(0, 40);
+  sessionId = newId();
+  lastData = null;
+  current = 0; score = 0; hits = 0;
+  answers = []; chosen = -1; resends = 0; seen = 0;
+  stage = "quiz"; tab = "jogo";
+  $("q-av").textContent = inicial(playerName);
+  chrome();
+  window.scrollTo(0, 0);
+  render();
+}
+
+/* ===== cronômetro ===== */
+function stopTimer() { if (timerId) { clearInterval(timerId); timerId = null; } }
+
+function startTimer(from) {
+  stopTimer();
+  startedAt = from || Date.now();
+  qStart = startedAt;
+  timeLeft = Math.max(0, TIME_LIMIT - (Date.now() - startedAt) / 1000);
+  paintTimer();
+  saveState();
+  timerId = setInterval(function () {
+    timeLeft = Math.max(0, TIME_LIMIT - (Date.now() - startedAt) / 1000);
+    paintTimer();
+    if (timeLeft <= 0) { stopTimer(); timeout(); }
+  }, 100);
+}
+
+function paintTimer() {
+  var low = timeLeft <= 3;
+  $("t-num").textContent = Math.ceil(timeLeft);
+  $("t-num").className = "big " + (low ? "low" : "acc");
+  $("t-bar").className = low ? "low" : "";
+  $("t-bar").style.width = (timeLeft / TIME_LIMIT) * 100 + "%";
+}
+
+/* ===== perguntas ===== */
+function render(skipTimer, keepOrder) {
+  var item = QUESTIONS[current];
+  answered = false;
+  chosen = -1;
+  if (!keepOrder) order = embaralhar(item.options.length);
+  $("q-sub").textContent = "Lição 08 · pergunta " + (current + 1) + " de " + QUESTIONS.length;
+  $("q-count").textContent = "Pergunta " + (current + 1) + "/" + QUESTIONS.length;
+  $("t-pts").textContent = score;
+  $("q-text").textContent = item.q;
+  $("q-fb").hidden = true;
+  $("q-next").disabled = true;
+  $("q-next").textContent = current === QUESTIONS.length - 1 ? "Ver resultado" : "Próxima";
+
+  var box = $("q-opts");
+  box.textContent = "";
+  order.forEach(function (orig, i) {
+    var text = item.options[orig];
+    var b = document.createElement("button");
+    b.type = "button"; b.className = "opt";
+    var L = document.createElement("span"); L.className = "L"; L.textContent = String.fromCharCode(65 + i);
+    var t = document.createElement("span"); t.className = "t"; t.textContent = text;
+    b.appendChild(L); b.appendChild(t);
+    b.addEventListener("click", function () { choose(i); });
+    box.appendChild(b);
+  });
+  if (!skipTimer) startTimer();
+}
+
+function pointsFor(rem) { return 100 + Math.round((rem / TIME_LIMIT) * 100); }
+function lockOptions() { document.querySelectorAll("#q-opts .opt").forEach(function (b) { b.disabled = true; }); }
+
+function payloadFrom(a) {
+  return { app: "gincana", action: "answer", session: sessionId, name: playerName, q: a.q,
+    choice: a.choice, correct: a.correct, seconds: a.seconds, points: a.points };
+}
+
+function report(choice, correct, seconds, points) {
+  var a = { q: current + 1, choice: choice, correct: correct,
+            seconds: Math.round(seconds * 10) / 10, points: points };
+  answers.push(a);
+  saveState();
+  enqueue(payloadFrom(a));
+}
+
+function feedback(kind, title, text) {
+  var fb = $("q-fb");
+  fb.className = "fb " + kind;
+  fb.hidden = false;
+  $("q-fb-t").textContent = title;
+  $("q-fb-x").textContent = text;
+}
+
+function choose(pos) {
+  var index = order[pos];          // alternativa original que foi tocada
+  if (answered) return;
+  answered = true;
+  chosen = index;
+  stopTimer();
+  var rem = timeLeft, spent = TIME_LIMIT - rem;
+  var item = QUESTIONS[current];
+  var btns = document.querySelectorAll("#q-opts .opt");
+  lockOptions();
+
+  var ok = index === item.answer, earned = 0;
+  if (ok) {
+    earned = pointsFor(rem); score += earned; hits++;
+    btns[pos].classList.add("correct");
+    feedback("ok", "Correto! +" + earned + " pontos", item.explain);
+  } else {
+    btns[pos].classList.add("wrong");
+    btns[order.indexOf(item.answer)].classList.add("correct");
+    feedback("bad", "Não foi desta vez. +0 pontos", item.explain);
+  }
+  $("t-pts").textContent = score;
+  $("q-next").disabled = false;
+  revelarProxima();
+  report(item.options[index], ok, spent, earned);
+}
+
+function timeout() {
+  if (answered) return;
+  answered = true;
+  chosen = -1;
+  var item = QUESTIONS[current];
+  lockOptions();
+  document.querySelectorAll("#q-opts .opt")[order.indexOf(item.answer)].classList.add("correct");
+  feedback("out", "Tempo esgotado. +0 pontos", item.explain);
+  $("q-next").disabled = false;
+  revelarProxima();
+  report("(sem resposta)", false, TIME_LIMIT, 0);
+}
+
+function revelarProxima() {
+  setTimeout(function () {
+    $("q-next").scrollIntoView({ block: "center", behavior: "smooth" });
+  }, 80);
+}
+
+$("q-next").addEventListener("click", function () {
+  if (!answered) return;
+  current++;
+  window.scrollTo(0, 0);
+  if (current < QUESTIONS.length) render(); else showResult();
+});
+
+function showResult(keepTab) {
+  stopTimer();
+  stage = "result"; if (!keepTab) tab = "jogo";
+  var ratio = score / (QUESTIONS.length * MAX_POINTS);
+  $("r-av").textContent = inicial(playerName);
+  $("r-sub").textContent = "Lição 08 · fim das perguntas";
+  $("r-nome").textContent = playerName;
+  $("r-ac").textContent = hits + "/" + QUESTIONS.length;
+  $("r-pts").textContent = score;
+  $("r-verdict").textContent =
+    ratio >= 0.8 ? "Excelente. Você dominou o conteúdo da lição e foi rápido nas respostas." :
+    ratio >= 0.5 ? "Muito bem. Vale revisar os pontos em que errou ou demorou." :
+    ratio >= 0.25 ? "Bom começo. Releia a seção sobre Evódia e Síntique e o chamado à alegria." :
+                    "Vale uma nova leitura da lição. Comece pelo texto principal e pela leitura semanal.";
+  $("k-av").textContent = inicial(playerName);
+  $("k-av").hidden = false;
+  updateSync();
+  chrome();
+  saveState();
+  window.scrollTo(0, 0);
+}
+
+$("r-rank").addEventListener("click", function () { setTab("rank"); });
+$("n-jogo").addEventListener("click", function () { setTab("jogo"); });
+$("n-rank").addEventListener("click", function () { setTab("rank"); });
+$("r-again").addEventListener("click", function () {
+  stage = "idle"; tab = "jogo";
+  answers = []; sessionId = ""; lastData = null; chosen = -1; seen = 0;
+  saveState();
+  $("g-start").disabled = $("g-nome").value.trim().length < 2;
+  chrome();
+  $("g-nome").focus();
+});
+
+/* ===== persistência: sobrevive a recarregamentos acidentais ===== */
+function saveState() {
+  if (IS_PAINEL) return;
+  try {
+    localStorage.setItem(STORE_KEY, JSON.stringify({
+      name: playerName, session: sessionId, stage: stage, tab: tab,
+      current: current, score: score, hits: hits, qStart: qStart,
+      answered: answered, chosen: chosen, order: order, answers: answers, seen: seen, savedAt: Date.now()
+    }));
+  } catch (e) {}
+}
+
+function loadState() {
+  try { var r = localStorage.getItem(STORE_KEY); return r ? JSON.parse(r) : null; }
+  catch (e) { return null; }
+}
+
+function restoreAnswered() {
+  stopTimer();
+  answered = true;
+  var item = QUESTIONS[current], a = null;
+  answers.forEach(function (x) { if (x.q === current + 1) a = x; });
+  var btns = document.querySelectorAll("#q-opts .opt");
+  lockOptions();
+  btns[order.indexOf(item.answer)].classList.add("correct");
+  if (chosen >= 0 && chosen !== item.answer && btns[order.indexOf(chosen)]) {
+    btns[order.indexOf(chosen)].classList.add("wrong");
+    feedback("bad", "Não foi desta vez. +0 pontos", item.explain);
+  } else if (chosen === item.answer) {
+    feedback("ok", "Correto! +" + (a ? a.points : 0) + " pontos", item.explain);
+  } else {
+    feedback("out", "Tempo esgotado. +0 pontos", item.explain);
+  }
+  timeLeft = a ? Math.max(0, TIME_LIMIT - a.seconds) : 0;
+  paintTimer();
+  $("q-next").disabled = false;
+}
+
+function resume() {
+  var s = loadState();
+  if (!s) return;
+  if (s.name) {
+    $("g-nome").value = s.name;
+    $("g-start").disabled = String(s.name).trim().length < 2;
+  }
+  if (!s.session || (s.stage !== "quiz" && s.stage !== "result")) return;
+  if (s.stage === "quiz" && Date.now() - (s.savedAt || 0) > MAX_RESUME_MS) return;
+
+  playerName = s.name || "";
+  sessionId = s.session;
+  current = Math.min(Math.max(s.current | 0, 0), QUESTIONS.length - 1);
+  score = s.score | 0;
+  hits = s.hits | 0;
+  answers = Array.isArray(s.answers) ? s.answers : [];
+  resends = 0;
+  seen = s.seen | 0;
+  $("q-av").textContent = inicial(playerName);
+  // Ao reabrir, reenvia só se a planilha ainda não tinha confirmado todas as respostas.
+  if (seen < answers.length) answers.forEach(function (a) { enqueue(payloadFrom(a)); });   // idempotente no servidor
+
+  if (s.stage === "result") {
+    tab = s.tab === "rank" ? "rank" : "jogo";
+    showResult(true);
+    return;
+  }
+
+  stage = "quiz"; tab = "jogo";
+  chrome();
+  var ord = (s.answered && Array.isArray(s.order) && s.order.length === QUESTIONS[current].options.length &&
+             s.order.slice().sort().join() === embaralhar(s.order.length).sort().join()) ? s.order : null;
+  if (ord) order = ord;            // pergunta já respondida: mantém as posições; senão, sorteia de novo
+  render(true, !!ord);
+  if (s.answered) {
+    chosen = typeof s.chosen === "number" ? s.chosen : -1;
+    restoreAnswered();
+  } else {
+    var elapsed = (Date.now() - (s.qStart || 0)) / 1000;
+    if (!s.qStart || elapsed >= TIME_LIMIT) timeout();   // o tempo corre mesmo com a página fechada
+    else startTimer(s.qStart);
+  }
+}
+
+/* ===== organizador: limpar rodada (só no painel) ===== */
+function admMsg(txt, tipo) {
+  var m = $("adm-msg");
+  m.className = "fb " + (tipo || "");
+  m.textContent = txt;
+  m.hidden = false;
+}
+function fecharAdm() {
+  $("adm-box").hidden = true;
+  $("adm-abrir").hidden = false;
+  $("adm-senha").value = "";
+  $("adm-msg").hidden = true;
+}
+function limparRodada() {
+  var senha = $("adm-senha").value;
+  if (!senha) { admMsg("Digite a senha do organizador.", "bad"); return; }
+  $("adm-ok").disabled = true;
+  admMsg("Apagando...", "");
+  fetchRanking(function (d) {
+    $("adm-ok").disabled = false;
+    if (!d) { admMsg("A planilha não respondeu. Nada foi apagado.", "bad"); return; }
+    if (!d.ok) { admMsg(d.error || "Não foi possível apagar.", "bad"); return; }
+    if (typeof d.apagadas !== "number") {
+      admMsg("O script ainda é a versão antiga. Cole o novo Code.gs e publique uma nova versão.", "bad");
+      return;
+    }
+    $("adm-senha").value = "";
+    admMsg("Rodada limpa: " + d.apagadas + (d.apagadas === 1 ? " resposta apagada." : " respostas apagadas."), "ok");
+    fetchRanking(renderRanking);
+    setTimeout(fecharAdm, 3000);
+  }, "action=reset&senha=" + encodeURIComponent(senha));
+}
+$("adm-abrir").addEventListener("click", function () {
+  $("adm-box").hidden = false;
+  $("adm-abrir").hidden = true;
+  $("adm-msg").hidden = true;
+  $("adm-senha").focus();
+});
+$("adm-cancel").addEventListener("click", fecharAdm);
+$("adm-voltar").addEventListener("click", function () { location.href = location.pathname; });
+$("g-org").addEventListener("click", function () { location.href = location.pathname + "?painel=1"; });
+$("adm-ok").addEventListener("click", limparRodada);
+$("adm-senha").addEventListener("keydown", function (e) { if (e.key === "Enter") limparRodada(); });
+
+/* ===== início ===== */
+function avisoPlanilha(msg) { var a = $("g-alert"); a.textContent = msg; a.hidden = false; }
+if (!API_URL) {
+  avisoPlanilha("A planilha ainda não foi configurada (API_URL). O jogo funciona, mas nada será gravado.");
+} else if (!IS_PAINEL) {
+  // verifica a conexão logo ao abrir, para o problema aparecer antes de o jogo começar
+  fetchRanking(function (d) {
+    if (!d) avisoPlanilha("Não consegui falar com a planilha. Você pode jogar, mas seus pontos não serão salvos. Avise o responsável.");
+    else if (!d.ok) avisoPlanilha("A planilha respondeu com erro: " + d.error);
+  });
+}
+
+if (IS_PAINEL) {
+  document.body.classList.add("painel");
+  $("k-hi").textContent = "Resultado ao vivo";
+  $("k-sec").hidden = true;
+  $("adm").hidden = !API_URL;
+}
+if (!IS_PAINEL) resume();
+chrome();
+</script>
+</body>
+</html>
